@@ -1,0 +1,6 @@
+#local folders
+venv/*
+logs/*
+
+#local env config
+.env
