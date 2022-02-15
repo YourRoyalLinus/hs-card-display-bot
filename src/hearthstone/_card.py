@@ -1,9 +1,11 @@
 from abc import ABCMeta
 from ast import operator
+from typing import Union
 from functools import reduce
 from .errors import NoCardFound 
 
-class _Card(metaclass=ABCMeta):
+
+class _Card(metaclass=ABCMeta): #override __getattr__ ?
     def __init__(self, dict: dict):
         self.__dict__ = dict
 
@@ -47,7 +49,7 @@ class Cardback(_Card):
     def __init__(self, dict: dict):
         super().__init__(dict)
 
-class MultipleCards: #Handling multiple cards - display or ask to filter?
+class MultipleCards:
     def __init__(self, cards: list):
         self._cards = [card for card in cards]
     
@@ -60,9 +62,9 @@ class MultipleCards: #Handling multiple cards - display or ask to filter?
     def __getitem__(self, index):
         if isinstance(index, str):
             for i in range(0, len(self)):
-                if self._cards[i]["name"] == index: #return CollectibleCard or NonCollectibleCard
-                    return self._cards[i]
-                raise NoCardFound("No card with name '{index}' found")
+                if self._cards[i]["name"] == index:
+                    return _find_card_type(self._cards[i])
+            raise NoCardFound("No card with name '{index}' found")
         else:
             return self._cards[index]
 
@@ -93,6 +95,20 @@ class MultipleCards: #Handling multiple cards - display or ask to filter?
         hashes = (hash(i) for i in self)
         return reduce(operator.xor, hashes, 0)
                     
+def _find_card_type(card_metadata :dict) -> Union[
+                                                Cardback,
+                                                Union[
+                                                    CollectibleCard,
+                                                    NonCollectibleCard
+                                                ]
+                                            ]:
+    if("cardBackId" in card_metadata.keys()):
+        return Cardback(card_metadata)
+    elif ("collectible" in card_metadata.keys() and 
+        card_metadata["collectible"]):
+        return CollectibleCard(card_metadata)
+    else:
+        return NonCollectibleCard(card_metadata)
 
 
     
