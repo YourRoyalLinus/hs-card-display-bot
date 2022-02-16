@@ -4,6 +4,11 @@ from typing import Union
 from functools import reduce
 from .errors import NoCardFound 
 
+__all__ = (
+    "CollectibleCard", 
+    "NonCollectibleCard", 
+    "MultipleCards"
+)
 
 class _Card(metaclass=ABCMeta):
     def __init__(self, dict: dict):

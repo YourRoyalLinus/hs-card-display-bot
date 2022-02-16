@@ -2,23 +2,28 @@ import aiohttp
 from typing import Any, Coroutine, Union
 from cache import AsyncLRU
 
-from env.env import _ENV
-from hearthstone.errors import InvalidArgument
-from hearthstone.utils import parse_api_result, parse_cardback_api_result
+from .errors import InvalidArgument
+from .utils import parse_api_result, parse_cardback_api_result
 from ._card import MultipleCards, CollectibleCard, NonCollectibleCard
+from ._api import ENV
 
-_BASE_URL = _ENV["API_URI"]
+_BASE_URL = ENV["API_URI"]
+_HEADERS =  {
+        'x-rapidapi-host': ENV["API_HOST"], 
+        'x-rapidapi-key' : ENV["API_KEY"]
+} 
 
 async def _make_request(session :aiohttp.ClientSession, 
-                        url :str, params :dict) -> Coroutine:
-    async with session.get(url=url, params=params) as req:
+                        url :str, headers :dict, params :dict) -> Coroutine:
+    async with session.get(url=url, headers=headers, params=params) as req:
         response = await req.json()
     return response
 
 @AsyncLRU(maxsize=128)
-async def _fetch_info(session :aiohttp.ClientSession) -> Any:
+async def fetch_info(session :aiohttp.ClientSession) -> Any:
     endpoint = "/info"
-    api_result = await _make_request(session, _BASE_URL+endpoint, None)
+    api_result = await _make_request(session, _BASE_URL+endpoint,
+                                    _HEADERS, None)
     
     return api_result
 
@@ -32,7 +37,8 @@ async def fetch_cards(session :aiohttp.ClientSession, name :str,
         raise InvalidArgument("'name' argument must not be empty or NoneType")
     
     endpoint = f"/cards/{name}"
-    api_result = await _make_request(session, _BASE_URL+endpoint, kwargs) 
+    api_result = await _make_request(session, _BASE_URL+endpoint,
+                                    _HEADERS, kwargs)
     
     return parse_api_result(api_result)
 
@@ -50,7 +56,8 @@ async def fetch_cards_by_class(session :aiohttp.ClientSession, hs_class :str,
                                 "empty or NoneType")
     
     endpoint = f"/cards/classes/{hs_class}"  
-    api_result = await _make_request(session, _BASE_URL+endpoint, kwargs) 
+    api_result = await _make_request(session, _BASE_URL+endpoint,
+                                    _HEADERS, kwargs)
     
     return parse_api_result(api_result)
 
@@ -68,7 +75,8 @@ async def fetch_cards_by_race(session :aiohttp.ClientSession, race :str,
                                 "empty or NoneType")
     
     endpoint = f"/cards/races/{race}"  
-    api_result = await _make_request(session, _BASE_URL+endpoint, kwargs)
+    api_result = await _make_request(session, _BASE_URL+endpoint,
+                                    _HEADERS, kwargs)
     
     return parse_api_result(api_result)
 
@@ -86,7 +94,8 @@ async def fetch_card_set(session :aiohttp.ClientSession, hs_set :str,
                                 "empty or NoneType")
     
     endpoint = f"/cards/sets/{hs_set}"  
-    api_result = await _make_request(session, _BASE_URL+endpoint, kwargs)
+    api_result = await _make_request(session, _BASE_URL+endpoint,
+                                    _HEADERS, kwargs)
     
     return parse_api_result(api_result)
 
@@ -104,7 +113,8 @@ async def fetch_cards_by_quality(session :aiohttp.ClientSession, quality :str,
                                 "empty or NoneType")
     
     endpoint = f"/cards/qualities/{quality}"  
-    api_result = await _make_request(session, _BASE_URL+endpoint, kwargs)
+    api_result = await _make_request(session, _BASE_URL+endpoint,
+                                    _HEADERS, kwargs) 
     
     return parse_api_result(api_result)
 
@@ -119,7 +129,8 @@ async def fetch_cardbacks(session :aiohttp.ClientSession, **kwargs) \
                            ]:      
 
     endpoint = "/cardsbacks"  
-    api_result = await _make_request(session, _BASE_URL+endpoint, kwargs)
+    api_result = await _make_request(session, _BASE_URL+endpoint,
+                                    _HEADERS, kwargs)
     
     return parse_cardback_api_result(api_result)
 
@@ -138,7 +149,8 @@ async def fetch_card_by_partial_name(session :aiohttp.ClientSession,
                                 "empty or NoneType")
     
     endpoint = f"/cards/search/{partial_name}"  
-    api_result = await _make_request(session, _BASE_URL+endpoint, kwargs)
+    api_result = await _make_request(session, _BASE_URL+endpoint,
+                                    _HEADERS, kwargs)
     
     return parse_api_result(api_result)
 
@@ -156,7 +168,8 @@ async def fetch_cards_by_faction(session :aiohttp.ClientSession, faction :str,
                                 "empty or NoneType")
     
     endpoint = f"/cards/factions/{faction}"  
-    api_result = await _make_request(session, _BASE_URL+endpoint, kwargs)
+    api_result = await _make_request(session, _BASE_URL+endpoint,
+                                    _HEADERS, kwargs)
     
     return parse_api_result(api_result)
 
@@ -174,7 +187,8 @@ async def fetch_cards_by_type(session :aiohttp.ClientSession, card_type :str,
                                 "empty or NoneType")
     
     endpoint = f"/cards/types/{card_type}"  
-    api_result = await _make_request(session, _BASE_URL+endpoint, kwargs)
+    api_result = await _make_request(session, _BASE_URL+endpoint,
+                                    _HEADERS, kwargs)
     
     return parse_api_result(api_result)
 
@@ -189,6 +203,7 @@ async def fetch_all_cards(session :aiohttp.ClientSession, **kwargs) \
                                ]:      
 
     endpoint = "/cards"  
-    api_result = await _make_request(session, _BASE_URL+endpoint, kwargs)
+    api_result = await _make_request(session, _BASE_URL+endpoint,
+                                    _HEADERS, kwargs)
     
     return parse_api_result(api_result)

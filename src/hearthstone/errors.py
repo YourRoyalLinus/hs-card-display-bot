@@ -1,7 +1,7 @@
 
 __all__ = (
     "APIException", 
-    "InvalidArgument"
+    "InvalidArgument",
     "HTTPException", 
     "NoCardFound",
     "NoCardbackFound",

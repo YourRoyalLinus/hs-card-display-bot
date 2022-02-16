@@ -5,10 +5,15 @@ from  cachetools import TTLCache
 import discord
 from discord.ext import commands
 from log import get_logger
-from env.env import _ENV #package
 from message_parser import is_valid_request_str, parse_message, ParserError
-from hearthstone._card import MultipleCards #package
-from hearthstone.errors import NoCardFound, NoDataFound #package
+from hearthstone import MultipleCards, NoCardFound, NoDataFound
+
+#temporary
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+_TOKEN = os.getenv("TOKEN")
 
 this = sys.modules[__name__]
 
@@ -18,12 +23,7 @@ logger = get_logger()
 
 @bot.event
 async def on_ready():
-    session_headers = {
-        'x-rapidapi-host': _ENV["API_HOST"], 
-        'x-rapidapi-key' : _ENV["API_KEY"]
-    } 
-    this.session = aiohttp.ClientSession(headers=session_headers)
-
+    this.session = aiohttp.ClientSession()
     logger.info('Logging in USER: ' + bot.user.name 
                 + ' ID: ' + str(bot.user.id))
 
@@ -58,14 +58,15 @@ async def on_message(message):
                             continue
 
                     if type(result) is MultipleCards:
-                        logger.warning(f"Multiple results for '{item}'")
+                        logger.warning(f"{request_id} Multiple results for "
+                                       f"'{item}'")
                         for card in result:
                             cache[card["dbfId"]] = result[card["name"]]
                         multiple_results = "\n".join([result[i]['name']
                                                      +": "+result[i]['dbfId']
                                                     for i in 
                                                         range(0, len(result))])
-                        await message.channel.send(f"{request_id} Found more "
+                        await message.channel.send(f"Found more "
                                                     "than one result for "
                                                     f"'{item}': \n"
                                                     f"{multiple_results}")                      
@@ -94,11 +95,12 @@ async def on_message(message):
     except discord.DiscordException as e:
         logger.error(request_id + " " + repr(e))
 
-bot.run(_ENV["TOKEN"])
+bot.run(_TOKEN)
 this.session.close()
 
 """
 TODO
+organize bot.py into smaller functions (decide where those go)
     - WRITE FUNCTION TO FETCH CARDS FROM DATABASE (Figure out exactly how I wanna do this, collectible vs non, show stats, include BG heros?, show golden img)
     - WRITE JSON PARSER FOR CARD METADATA (make hashable for LRU caching)
     - IMPROVE ERROR HANDLING
