@@ -1,17 +1,19 @@
 import sys
 import aiohttp
+import uuid
+from  cachetools import TTLCache
 import discord
 from discord.ext import commands
-
 from log import get_logger
 from env.env import _ENV #package
-from hearthstone.hearthstone import fetch_card_by_partial_name #NEED2TEST ALL FUNCTIONS (FUNCTIONALLY + NON FUNCTIONALLY)
-from hearthstone._card import MultipleCards
-from hearthstone.errors import NoCardFound
+from message_parser import is_valid_request_str, parse_message, ParserError
+from hearthstone._card import MultipleCards #package
+from hearthstone.errors import NoCardFound, NoDataFound #package
 
 this = sys.modules[__name__]
 
 bot = commands.Bot(command_prefix='!')
+cache = TTLCache(maxsize=128, ttl=600)
 logger = get_logger()
 
 @bot.event
@@ -21,40 +23,76 @@ async def on_ready():
         'x-rapidapi-key' : _ENV["API_KEY"]
     } 
     this.session = aiohttp.ClientSession(headers=session_headers)
+
     logger.info('Logging in USER: ' + bot.user.name 
                 + ' ID: ' + str(bot.user.id))
 
-@bot.event #Refactor using commands + enhanced error handling
+@bot.event
 async def on_message(message):
     if message.author == bot.user:
         return
-    try:
-        is_fetch_command = False 
-        if message.content[0] == '[' and message.content[-1] == ']':  #Smarter checks for this to have "Hey I think [CARD] is op" work
-            is_fetch_command = True
-            logger.info(f'Fetch command recieved: {message.content}')
+    try: 
+        request_id = str(uuid.uuid1())
+        
+        if is_valid_request_str(message.content):        
+            logger.info(f"{request_id} Fetch message recieved: "
+                        f"{message.content}")
 
-        if is_fetch_command:
-            card_names = message.content.replace('[', '').replace(']', '')
-            cards = {card.strip().title() for card in card_names.split('|')}
-            for card in cards:
-                logger.info(f'Fetching {card}')
-                try:
-                    result = await fetch_card_by_partial_name(this.session, card)
-                except NoCardFound as e:
-                    await message.channel.send(f'No card found with name: {card}')
-                    logger.warning(repr(e))
-                    return
-                    
-                if type(result) is MultipleCards: #May need to become a raised exception, depends on how I wanna handle
-                    multiple_results = " | ".join({"**"+result[i]['name']+"**" for i in range(0, len(result))})
-                    logger.warning(f'Multiple results for {card}')
-                    await message.channel.send(f'Found more than one result for {card}: {multiple_results}') 
-                else:
-                    logger.info(f'Fetch successful for {type(card).__name__}: {card}')
-                    await message.channel.send(result.img) #handle img empty?
+            try:
+                fetch_requests = parse_message(message)
+            except ParserError as e:
+                logger.warning(request_id + " " + repr(e))
+                return
+
+            for request in fetch_requests:
+                logger.info(f'{request_id} Executing request: {request}')
+
+                for item in request.items:
+                    result = cache.get(item, None)
+                    if not result:
+                        logger.info(f'{request_id} Fetching {item}')
+                        try: 
+                            result = await request.API(this.session, item)
+                        except NoCardFound as e:
+                            logger.warning(request_id + " " + repr(e))
+                            continue
+
+                    if type(result) is MultipleCards:
+                        logger.warning(f"Multiple results for '{item}'")
+                        for card in result:
+                            cache[card["dbfId"]] = result[card["name"]]
+                        multiple_results = "\n".join([result[i]['name']
+                                                     +": "+result[i]['dbfId']
+                                                    for i in 
+                                                        range(0, len(result))])
+                        await message.channel.send(f"{request_id} Found more "
+                                                    "than one result for "
+                                                    f"'{item}': \n"
+                                                    f"{multiple_results}")                      
+                    else:
+                        logger.info(
+                            f"{request_id} Fetch successful for "
+                                    f"{type(result).__name__}: {item}")
+                        try:
+                            response = request.format(result)
+                        except NoDataFound as e:
+                            logger.warning(request_id + " " + repr(e))
+
+                        if type(response) is discord.Embed:
+                            try:
+                                await message.channel.send(embed=response)
+                            except NoDataFound as e:
+                                logger.warning(request_id + " " + repr(e))
+                        else:
+                            try:
+                                await message.channel.send(response)
+                            except NoDataFound as e:
+                                logger.warning(request_id + " " + repr(e))
+        else:
+            logger.warning(f"{request_id} Non-Request Message: " #Do we wanna log every msg????
+                                            f"{message.content}")
     except discord.DiscordException as e:
-        logger.error(str(e))
+        logger.error(request_id + " " + repr(e))
 
 bot.run(_ENV["TOKEN"])
 this.session.close()
@@ -68,7 +106,7 @@ TODO
     - CACHING
     - ASYNC/MULTITHREADING
     - OPTIMIZATION
-
+    - PROPER PROJECT STRUCTURING
     [](){}
     Bot commands to change settings
      - [] be golden by default

@@ -1,11 +1,11 @@
+import operator
 from abc import ABCMeta
-from ast import operator
 from typing import Union
 from functools import reduce
 from .errors import NoCardFound 
 
 
-class _Card(metaclass=ABCMeta): #override __getattr__ ?
+class _Card(metaclass=ABCMeta):
     def __init__(self, dict: dict):
         self.__dict__ = dict
 

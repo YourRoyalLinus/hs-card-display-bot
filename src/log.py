@@ -6,7 +6,6 @@ _LOGGING_DATE = datetime.datetime.today().strftime('%Y%m%d')
 _LOG_FILE = _LOGGING_DIR + 'LOG_' + _LOGGING_DATE + '.log'
 _BOT_LOGGER_NAME = 'hs-card-discord-bot'
 
-#Separate Loggers by module API/Bot/etc.??
 def _init() -> None:
     _LOGGER = logging.getLogger(_BOT_LOGGER_NAME)
     _LOGGER.setLevel(logging.INFO)
