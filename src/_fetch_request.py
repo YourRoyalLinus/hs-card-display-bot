@@ -1,8 +1,8 @@
 import operator
 from typing import Callable
 from functools import reduce
-from hearthstone.hearthstone import fetch_card_by_partial_name, fetch_cardbacks
-from format import format_card, format_card_metadata_embeded, format_cardback
+from hearthstone.hearthstone import fetch_card_by_partial_name
+from format import format_card, format_card_metadata_embeded
 
 class _FetchRequest:
     def __init__(self, request_str) -> None:
@@ -55,12 +55,6 @@ class CardFetchRequest(_FetchRequest):
         super().__init__(request_string)
         self._api = fetch_card_by_partial_name
         self._format = format_card
-
-class CardbackFetchRequest(_FetchRequest):
-    def __init__(self, request_string) -> None:
-        super().__init__(request_string)
-        self._api = fetch_cardbacks
-        self._format = format_cardback
 
 class MetadataFetchRequest(_FetchRequest):
     def __init__(self, request_string) -> None:

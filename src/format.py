@@ -1,6 +1,6 @@
 from typing import Union
 from discord import Embed
-from hearthstone._card import CollectibleCard, NonCollectibleCard, Cardback
+from hearthstone._card import CollectibleCard, NonCollectibleCard
 from hearthstone.errors import NoDataFound
 
 def _create_embed(card :Union[CollectibleCard, NonCollectibleCard]) -> Embed:
@@ -34,9 +34,3 @@ def format_card_metadata_embeded(
             raise NoDataFound(f"Missing Metadata for card: {card}")
     else:
         raise NoDataFound(f"Missing Metadata for card: {card}")
-
-def format_cardback(cardback: Cardback) -> str:
-    try:
-        cardback.imgAnimated or cardback.img
-    except AttributeError:
-          raise NoDataFound(f"No 'img' found for {cardback}")
