@@ -1,7 +1,7 @@
 import re
 from typing import Callable, Set, Tuple
 from discord import Message
-from _fetch_request import CardFetchRequest, MetadataFetchRequest
+from src._fetch_request import CardFetchRequest, MetadataFetchRequest
 
 class ParserError(Exception):
     pass

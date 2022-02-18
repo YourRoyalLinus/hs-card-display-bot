@@ -1,7 +1,7 @@
 from typing import Union
 from discord import Embed
-from hearthstone._card import CollectibleCard, NonCollectibleCard
-from hearthstone.errors import NoDataFound
+from src.hearthstone._card import CollectibleCard, NonCollectibleCard
+from src.hearthstone.errors import NoDataFound
 
 def _create_embed(card :Union[CollectibleCard, NonCollectibleCard]) -> Embed:
     try:

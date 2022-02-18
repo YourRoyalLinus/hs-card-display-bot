@@ -1,8 +1,8 @@
 import operator
-from typing import Callable
+from typing import Callable, Set
 from functools import reduce
-from hearthstone.hearthstone import fetch_card_by_partial_name
-from format import format_card, format_card_metadata_embeded
+from src.hearthstone.hearthstone import fetch_card_by_partial_name
+from src.format import format_card, format_card_metadata_embeded
 
 class _FetchRequest:
     def __init__(self, request_str) -> None:
@@ -34,7 +34,7 @@ class _FetchRequest:
         return reduce(operator.xor, hashes, 0)
 
     @property
-    def items(self) -> str:
+    def items(self) -> Set[str]:
         return self._items
 
     @items.setter
