@@ -1,16 +1,19 @@
-import operator
-from abc import ABCMeta
-from typing import Union
-from functools import reduce
-from .errors import NoCardFound 
-
 __all__ = (
     "CollectibleCard", 
     "NonCollectibleCard", 
     "MultipleCards"
 )
 
+import operator
+from abc import ABCMeta
+from typing import Union
+from functools import reduce
+from .errors import NoCardFound 
+
 class _Card(metaclass=ABCMeta):
+    """An abstract class that represents a Card returned by the hearthstone
+    api
+    """
     def __init__(self, dict: dict):
         self.__dict__ = dict
 
@@ -19,6 +22,9 @@ class _Card(metaclass=ABCMeta):
         return "{}({})".format(cls, self.__dict__)
 
     def __str__(self) -> str:
+        """Return the 'name' attribute, if that doesn't exist, the card is
+        considered an 'Invalid Card'
+        """
         try:
             name = getattr(self, 'name')
         except AttributeError:
@@ -28,6 +34,7 @@ class _Card(metaclass=ABCMeta):
         return cls + ": " + name
 
     def __bool__(self) -> bool:
+        """Return True if all values in _Card.__dict__ are truthy"""
         if all(value for value in self.__dict__.values()):
             return True
         else:
@@ -43,18 +50,33 @@ class _Card(metaclass=ABCMeta):
         return reduce(hash, self.__dict__.values(), 0)
 
 class CollectibleCard(_Card):
+    """A concrete class that subclasses _Card and represents a collectible 
+    card returned by the hearthstone api. All CollectibleCards have a 
+    'collectible' attribute equal to 1 or a truthy value
+    """
     def __init__(self, dict: dict):
         super().__init__(dict)
 
 class NonCollectibleCard(_Card):
+    """A concrete class that subclasses _Card and represents a non-collectible 
+    card returned by the hearthstone api.
+    """
     def __init__(self, dict: dict):
         super().__init__(dict)
         
 class Cardback(_Card):
+    """A concrete class that subclasses _Card and represents a cardback
+    returned by the hearthstone api.
+    """
     def __init__(self, dict: dict):
         super().__init__(dict)
 
 class MultipleCards:
+    """
+    A data structure that represents multiple _Card objects returned by the
+    hearthstone API. This will typically occur when a user makes a query using
+    partial name search.
+    """
     def __init__(self, cards: list):
         self._cards = [card for card in cards]
     
@@ -65,6 +87,14 @@ class MultipleCards:
         return len(self._cards)
     
     def __getitem__(self, index):
+        """Given an index, if it a string, iterate through the underlying 
+        sequence of cards and attempt to match index to card.name. If no
+        such card exists such that card[i]['name'] == index raise NoCardFound.
+        If such a card does exist, call _find_card_type and pass it the card
+        metadata from self.
+
+        If the index is not a string, attempt to return sequence[index]
+        """
         if isinstance(index, str):
             for i in range(0, len(self)):
                 if self._cards[i]["name"] == index:
@@ -82,7 +112,10 @@ class MultipleCards:
         return cls + ", ".join([card["cardId"] for card in self._cards])
 
     def __bool__(self):
-        return (self._cards > 0)
+        """Return True if the number of cards in the underlying sequence is
+        greater than 1
+        """
+        return (self._cards > 1)
     
     def __eq__(self, __o: object) -> bool:
         if isinstance(__o, MultipleCards):
@@ -107,6 +140,18 @@ def _find_card_type(card_metadata :dict) -> Union[
                                                     NonCollectibleCard
                                                 ]
                                             ]:
+    """Inspect the keys of card_metadata and return a new instance
+    of a concrete _Card implementation that corresponds to the suspected card 
+    type. 
+
+    Positional Arguments:
+        - card_metadata : dict
+            - a dictionary object that contains the card metadata
+
+    Returns:
+        a concrete _Card implemented class inferred from the keys of 
+        card_metadata
+    """
     if("cardBackId" in card_metadata.keys()):
         return Cardback(card_metadata)
     elif ("collectible" in card_metadata.keys() and 
