@@ -1,7 +1,17 @@
 from typing import Union
 from discord import Embed
 from src.hearthstone._card import CollectibleCard, NonCollectibleCard
-from src.hearthstone.errors import NoDataFound
+
+
+class FormattingException(Exception): 
+    """Base exception raised when an error occurs while Formatting"""
+    pass
+
+class MissingData(FormattingException):
+    """Exception that is raised when an expected attribute of a concrete
+    implemented _Card object is missing
+    """
+    pass
 
 def _create_embed(card :Union[CollectibleCard, NonCollectibleCard]) -> Embed:
     """Created a Discord.Embed. For each attr in card create a field
@@ -16,7 +26,7 @@ def _create_embed(card :Union[CollectibleCard, NonCollectibleCard]) -> Embed:
     Returns:
         a populated Discord.Embed object
 
-    AttributeError is raised if an exception is found
+    Raised a FormattingException if an attribute is not found
     """
     try:
         embed = Embed(type="rich")
@@ -28,8 +38,8 @@ def _create_embed(card :Union[CollectibleCard, NonCollectibleCard]) -> Embed:
                                     for i in range(0, len(_value)))
             embed.add_field(name=_name, value=_value, inline=False)
         embed.set_image(url=card.img)
-    except AttributeError:
-        raise 
+    except AttributeError as e:
+        raise FormattingException(e)
 
     return embed
 
@@ -44,12 +54,12 @@ def format_card(card : Union[CollectibleCard, NonCollectibleCard]) -> str:
     Returns:
         card.img
 
-    NoDataFound is raised when card.img does not exist 
+    Raises a FormattingException when card.img does not exist 
     """
     try:
         return card.img
     except AttributeError:
-        raise NoDataFound(f"No 'img' found for {card}")
+        raise FormattingException(f"No 'img' found for {card}")
 
 def format_card_metadata_embeded(
         card :Union[CollectibleCard, NonCollectibleCard]) -> Embed:
@@ -63,16 +73,10 @@ def format_card_metadata_embeded(
 
     Returns:
         the Discord.Embed object from _create_embed
-        
-    If an AttributeError is raised from _create_embed, raise NoDataFound
-    exception
 
-    If not card, Raise NoDataFound exception
+    Raises a MissingData exception when `if card` evaluates to False
     """
     if card:
-        try:
-            return _create_embed(card)
-        except AttributeError:
-            raise NoDataFound(f"Missing Metadata for card: {card}")
+        return _create_embed(card)
     else:
-        raise NoDataFound(f"Missing Metadata for card: {card}")
+        raise MissingData(f"Missing Metadata for card: {card}")

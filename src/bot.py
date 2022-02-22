@@ -10,8 +10,9 @@ from .log import get_logger
 from ._fetch_request import CardFetchRequest, MetadataFetchRequest
 from .message_parser import ParserException, is_valid_request_str
 from .message_parser import parse_message
+from .format import FormattingException
 from .hearthstone import CollectibleCard, NonCollectibleCard, MultipleCards 
-from .hearthstone import APIException, NoDataFound
+from .hearthstone import APIException
 
 logger = get_logger()
 
@@ -335,7 +336,7 @@ class Bot(commands.Bot):
                 try:
                     response = _handle_api_results(self.cache, result, item,
                                                     request, request_id)
-                except NoDataFound as e:
+                except FormattingException as e:
                     logger.warning(request_id + " " + repr(e) + " raised")
                     response = {"content" : e}
 

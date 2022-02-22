@@ -1,5 +1,5 @@
 import re
-from typing import Union, List, Tuple
+from typing import Union, List
 from discord import Message
 from src._fetch_request import CardFetchRequest, MetadataFetchRequest
 

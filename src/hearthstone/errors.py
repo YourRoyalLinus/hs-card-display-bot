@@ -1,10 +1,10 @@
 
 __all__ = (
-    "APIException", 
-    "InvalidArgument",
+    "APIException",
+    "InvalidArgument", 
+    "HTTPException",
+    "APIServerError",
     "NoCardFound",
-    "NoCardbackFound",
-    "NoDataFound"
 )
 
 class APIException(Exception):
@@ -19,20 +19,29 @@ class InvalidArgument(APIException):
     """
     pass
 
-class NoCardFound(APIException):
-    """Exception that is raised when the API fails to return data from a user
-    query to an endpoint that is expecting to return a CollectibleCard or
-    NonCollectible Card object
+class HTTPException(APIException):
+    """Exception that's raised when errors are recieved during requests
+    to the API endpoints
     """
 
-class NoCardbackFound(APIException):
-    """Exception that is raised when the API fails to return data from a user
-    query to an endpoint that is expecting to return a Cardback object
+    def __init__(self, message, status):
+        self.message = message
+        self.status = status
+
+        super().__init__(self.message)
+
+class APIServerError(HTTPException):
+    """Exception that's raised when a 500 range status code occurs
+
+    Subclassed from HTTPExcpetion
     """
     pass
 
-class NoDataFound(APIException):
-    """Exception that is raised when an expected attribute of a concrete
-    implemented _Card object is missing
+class NoCardFound(HTTPException):
+    """Exception that's raised when the API fails to return data from a user
+    query to an endpoint that is expecting to return a CollectibleCard or
+    NonCollectible Card object
+
+    Subclassed from HTTPExcpetion
     """
     pass

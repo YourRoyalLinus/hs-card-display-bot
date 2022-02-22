@@ -1,9 +1,8 @@
 import aiohttp
 from typing import Any, Coroutine, Union
 from cache import AsyncLRU
-
-from .errors import InvalidArgument
-from ._parser import parse_api_result, parse_cardback_api_result
+from .errors import APIServerError, HTTPException, InvalidArgument, NoCardFound
+from ._parser import parse_api_result
 from ._card import MultipleCards, CollectibleCard, NonCollectibleCard, Cardback
 from ._api import ENV
 
@@ -34,11 +33,26 @@ async def _make_request(session :aiohttp.ClientSession,
             - keyword parameters to pass to session.get(). Recieved from
             the calling function as kwargs
     
+    Raises:
+        - NoCardFound when response.status == 404
+        - APIServerError when response.status >= 500
+        - HTTPException when any other status is flagged by the client session
+        
     Returns:
         the Coroutine from awaiting request.json()
     """
     async with session.get(url=url, headers=headers, params=params) as req:
-        response = await req.json()
+        try:
+            response = await req.json()
+            req.raise_for_status()
+        except aiohttp.ClientResponseError as e:
+            if e.status == 404:
+                raise NoCardFound(str(e), e.status)
+            elif e.status >= 500:
+                raise APIServerError(str(e), e.status)
+            else:
+                raise HTTPException(str(e), e.status)
+    
     return response
 
 @AsyncLRU(maxsize=128)
@@ -353,7 +367,7 @@ async def fetch_cardbacks(session :aiohttp.ClientSession, **kwargs) \
     api_result = await _make_request(session, _BASE_URL+endpoint,
                                     _HEADERS, kwargs)
     
-    return parse_cardback_api_result(api_result)
+    return parse_api_result(api_result)
 
 @AsyncLRU(maxsize=128)
 async def fetch_card_by_partial_name(session :aiohttp.ClientSession, 
