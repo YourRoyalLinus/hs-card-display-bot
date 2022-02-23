@@ -78,7 +78,7 @@ class MultipleCards:
     partial name search.
     """
     def __init__(self, cards: list):
-        self._cards = [card for card in cards]
+        self._cards :list[dict] = [card for card in cards]
     
     def __iter__(self):
         return iter(self._cards)
@@ -97,9 +97,9 @@ class MultipleCards:
         """
         if isinstance(index, str):
             for i in range(0, len(self)):
-                if self._cards[i]["name"] == index:
+                if self._cards[i].get("name") == index:
                     return _find_card_type(self._cards[i])
-            raise NoCardFound("No card with name '{index}' found")
+            raise NoCardFound(f"No card with name '{index}' found", None)
         else:
             return self._cards[index]
 
@@ -115,15 +115,15 @@ class MultipleCards:
         """Return True if the number of cards in the underlying sequence is
         greater than 1
         """
-        return (self._cards > 1)
+        return (len(self._cards) > 1)
     
     def __eq__(self, __o: object) -> bool:
+        """Return True if cards in the underlying sequence of self are equal to 
+        cards found in the underlying sequence of __o regardless of ordering
+        """
         if isinstance(__o, MultipleCards):
             if len(__o) == len(self):
-                for i in range(0, len(__o)):
-                    if __o[i] != self[i]:
-                        return False
-                return True
+                return (self._cards == __o._cards)
             else:
                 return False
         else:

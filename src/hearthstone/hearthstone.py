@@ -342,7 +342,7 @@ async def fetch_cards_by_quality(session :aiohttp.ClientSession, quality :str,
 
 @AsyncLRU(maxsize=4)
 async def fetch_cardbacks(session :aiohttp.ClientSession, **kwargs) \
-                        -> Union[MultipleCards, Cardback]:
+                        -> Union[MultipleCards, Cardback]: #BUG - Content Type
     """Make an asynchronous request to /cardbacks endpoint.
 
     Positional Arguments:

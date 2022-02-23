@@ -14,8 +14,6 @@ class APIException(Exception):
 class InvalidArgument(APIException):
     """Exception that's raised when an argument passed to an API calling
     function is not valid
-    
-    E.g: 'partial_name' arg is None or empty in fetch_card_by_partial_name
     """
     pass
 
