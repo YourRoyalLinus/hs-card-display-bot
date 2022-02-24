@@ -109,7 +109,7 @@ class MultipleCards:
 
     def __str__(self) -> str:
         cls = type(self).__name__ +f" [{len(self)}]: "
-        return cls + ", ".join([card["cardId"] for card in self._cards])
+        return cls + ", ".join([card["dbfId"] for card in self._cards])
 
     def __bool__(self):
         """Return True if the number of cards in the underlying sequence is
