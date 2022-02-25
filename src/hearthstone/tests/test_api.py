@@ -1,8 +1,6 @@
 import unittest
 import warnings
-
 from random import randint
-from aiohttp import ClientSession
 from aiohttp.test_utils import AioHTTPTestCase
 from aiohttp.web import Application, Response
 from hearthstone import *
