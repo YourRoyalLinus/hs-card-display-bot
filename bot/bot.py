@@ -300,7 +300,7 @@ class Bot(commands.Bot):
                                             fetch_requests, request_id)    
         except DiscordException as e:
             logger.error(request_id + " " + repr(e))
-            self.close()
+            await self.close()
     
     async def _handle_requests(self, message :Message, 
                                 requests :List[Union[CardFetchRequest, 
