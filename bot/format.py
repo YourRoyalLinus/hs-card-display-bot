@@ -1,6 +1,6 @@
 from typing import Union
 from discord import Embed
-from src.hearthstone._card import CollectibleCard, NonCollectibleCard
+from bot.hearthstone._card import CollectibleCard, NonCollectibleCard
 
 
 class FormattingException(Exception): 

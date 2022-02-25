@@ -1,7 +1,7 @@
 import re
 from typing import Union, List
 from discord import Message
-from src._fetch_request import CardFetchRequest, MetadataFetchRequest
+from bot._fetch_request import CardFetchRequest, MetadataFetchRequest
 
 class ParserException(Exception):
     """Base exception raised when an error occurs while parsing"""

@@ -24,7 +24,7 @@ _env_file_path = str(Path(__file__).parent.resolve()) + "\.env"
 if not path.exists(_env_file_path):
     raise APIException("Could not find .env file for hearthstone API. A "
                         ".env file with 'RAPID_API_KEY', 'RAPID_API_HOST' in "
-                        " the root of the hearthstone package is missing.")
+                        "the root of the hearthstone package is missing.")
 else:
     load_dotenv(dotenv_path=_env_file_path)
 
