@@ -3,7 +3,7 @@
 Modules
 ---
     - test_api: tests related to the API server and making API requests
-    -test_card_obj: tests related to functionality of the _Card objects 
+    - test_cards: tests related to functionality of the _Card objects 
 
 """
 

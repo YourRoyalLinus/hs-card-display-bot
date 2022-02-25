@@ -14,32 +14,32 @@ _HEADERS =  {
 
 async def _make_request(session :aiohttp.ClientSession, 
                         url :str, headers :dict, params :dict) -> Coroutine:
-    """Make an asynchronous request using aiohttp.session.get passing
-    url=url, headers=headers, params=params and return the result
+    """Make an asynchronous request using session.get passing
+    url=url, headers=headers, params=params and return the parsed result
 
-    Positional Arguments:
+    Positional Arguments
         - session : aiohttp.ClientSession
             - a reference to the aiohttp client session
         - url : str
-            - the API endpoint url, which is a combination of the _BASE_URL
-            global module variable concatenated with an endpoint variable from
-            each API function
+            - the API endpoint url, which is a combination of the `_BASE_URL`
+            global module variable concatenated with an `endpoint` variable 
+            from each API function
         - headers : dict
             - the headers to be passed in. Every header includes the
-            _HEADERS global module dict variable which contains API_HOST 
-            and API_KEY keys, plus any new key:value pairs passed in from each
+            `_HEADERS` global module dict variable which contains `API_HOST` 
+            and `API_KEY` keys, plus any new key:value pairs passed in from each
             API function
         - params : dict
             - keyword parameters to pass to session.get(). Recieved from
             the calling function as kwargs
     
     Raises:
-        - NoCardFound when response.status == 404
-        - APIServerError when response.status >= 500
+        - NoCardFound when `response.status` == `404`
+        - APIServerError when `response.status` >= `500`
         - HTTPException when any other status is flagged by the client session
         
     Returns:
-        the Coroutine from awaiting request.json()
+        the `Coroutine` from `await request.json()`
     """
     async with session.get(url=url, headers=headers, params=params) as req:
         try:
@@ -74,7 +74,7 @@ async def fetch_info(session :aiohttp.ClientSession, **kwargs) -> Any:
                 koKR, plPL, ptBR, ruRU, zhCN, zhTW, jaJP, thTH
     
     Returns:
-        the raw response from the endpoint as a JSON
+        the raw response from the endpoint as a `JSON`
     """
     endpoint = "/info"
     api_result = await _make_request(session, _BASE_URL+endpoint,
@@ -88,13 +88,13 @@ async def fetch_cards(session :aiohttp.ClientSession, name :str,
                                     MultipleCards, 
                                     Union[CollectibleCard, NonCollectibleCard]
                                    ]:
-    """Make an asynchronous request to /cards/{name} endpoint.
+    """Make an asynchronous request to /cards/`{name}` endpoint.
 
     Positional Arguments:
         - session : aiohttp.ClientSession
             - a reference to the aiohttp client session
         - name : str
-            - the full name or dbfid of a hearthstone card
+            - the name or dbfId of a hearthstone card
         - kwargs
             -  keyword parameters to pass to session.get() as params
 
@@ -108,11 +108,11 @@ async def fetch_cards(session :aiohttp.ClientSession, name :str,
                 - Available locales: enUS, enGB, deDE, esES, esMX, frFR, itIT, 
                 koKR, plPL, ptBR, ruRU, zhCN, zhTW, jaJP, thTH
 
-    Raises InvalidArgument when ``if not name`` evaluates to True.
+    Raises `InvalidArgument` when ``if not name`` evaluates to `True`.
 
     Returns:
-        a MultipleCards, CollectibleCard, or a NonCollectibleCard object. If
-        the endpoint failed to return data a NoCardFound exception will be
+        a `MultipleCards`, `CollectibleCard`, or a `NonCollectibleCard` object. 
+        If the endpoint failed to return data a `NoCardFound` exception will be
         raised
     """
     if not name:
@@ -133,7 +133,7 @@ async def fetch_cards_by_class(session :aiohttp.ClientSession, hs_class :str,
                                                     NonCollectibleCard
                                                 ]
                                             ]:
-    """Make an asynchronous request to /cards/classes/{hs_class} endpoint.
+    """Make an asynchronous request to /cards/classes/`{hs_class}` endpoint.
 
     Positional Arguments:
         - session : aiohttp.ClientSession
@@ -161,11 +161,11 @@ async def fetch_cards_by_class(session :aiohttp.ClientSession, hs_class :str,
                 - Available locales: enUS, enGB, deDE, esES, esMX, frFR, itIT, 
                 koKR, plPL, ptBR, ruRU, zhCN, zhTW, jaJP, thTH
 
-    Raises InvalidArgument when ``if not hs_class`` evaluates to True.
+    Raises `InvalidArgument` when ``if not hs_class`` evaluates to `True`.
 
     Returns:
-        a MultipleCards, CollectibleCard, or a NonCollectibleCard object. If
-        the endpoint failed to return data a NoCardFound exception will be
+        a `MultipleCards`, `CollectibleCard`, or a `NonCollectibleCard` object. 
+        If the endpoint failed to return data a `NoCardFound` exception will be
         raised
     """     
     if not hs_class:
@@ -187,7 +187,7 @@ async def fetch_cards_by_race(session :aiohttp.ClientSession, race :str,
                                                     NonCollectibleCard
                                                 ]
                                            ]:
-    """Make an asynchronous request to /cards/races/{race} endpoint.
+    """Make an asynchronous request to /cards/races/`{race}` endpoint.
 
     Positional Arguments:
         - session : aiohttp.ClientSession
@@ -215,11 +215,11 @@ async def fetch_cards_by_race(session :aiohttp.ClientSession, race :str,
                 - Available locales: enUS, enGB, deDE, esES, esMX, frFR, itIT, 
                 koKR, plPL, ptBR, ruRU, zhCN, zhTW, jaJP, thTH
 
-    Raises InvalidArgument when ``if not race`` evaluates to True.
+    Raises `InvalidArgument` when ``if not race`` evaluates to `True`.
 
     Returns:
-        a MultipleCards, CollectibleCard, or a NonCollectibleCard object. If
-        the endpoint failed to return data a NoCardFound exception will be
+        a `MultipleCards`, `CollectibleCard`, or a `NonCollectibleCard` object. 
+        If the endpoint failed to return data a `NoCardFound` exception will be
         raised
     """           
     if not race:
@@ -241,7 +241,7 @@ async def fetch_card_set(session :aiohttp.ClientSession, hs_set :str,
                                                 NonCollectibleCard
                                             ]
                                       ]:
-    """Make an asynchronous request to /cards/sets/{hs_set} endpoint.
+    """Make an asynchronous request to /cards/sets/`{hs_set}` endpoint.
 
     Positional Arguments:
         - session : aiohttp.ClientSession
@@ -269,11 +269,11 @@ async def fetch_card_set(session :aiohttp.ClientSession, hs_set :str,
                 - Available locales: enUS, enGB, deDE, esES, esMX, frFR, itIT, 
                 koKR, plPL, ptBR, ruRU, zhCN, zhTW, jaJP, thTH
     
-    Raises InvalidArgument when ``if not hs_set`` evaluates to True.
+    Raises `InvalidArgument` when ``if not hs_set`` evaluates to `True`.
 
     Returns:
-        a MultipleCards, CollectibleCard, or a NonCollectibleCard object. If
-        the endpoint failed to return data a NoCardFound exception will be
+        a `MultipleCards`, `CollectibleCard`, or a `NonCollectibleCard` object. 
+        If the endpoint failed to return data a `NoCardFound` exception will be
         raised
     """           
     if not hs_set:
@@ -295,7 +295,7 @@ async def fetch_cards_by_quality(session :aiohttp.ClientSession, quality :str,
                                                     NonCollectibleCard
                                                 ]
                                               ]: 
-    """Make an asynchronous request to /cards/qualities/{quality} endpoint.
+    """Make an asynchronous request to /cards/qualities/`{quality}` endpoint.
 
     Positional Arguments:
         - session : aiohttp.ClientSession
@@ -323,11 +323,11 @@ async def fetch_cards_by_quality(session :aiohttp.ClientSession, quality :str,
                 - Available locales: enUS, enGB, deDE, esES, esMX, frFR, itIT, 
                 koKR, plPL, ptBR, ruRU, zhCN, zhTW, jaJP, thTH
     
-    Raises InvalidArgument when ``if not quality`` evaluates to True.
+    Raises `InvalidArgument` when ``if not quality`` evaluates to `True`.
 
     Returns:
-        a MultipleCards, CollectibleCard, or a NonCollectibleCard object. If
-        the endpoint failed to return data a NoCardFound exception will be
+        a `MultipleCards`, `CollectibleCard`, or a `NonCollectibleCard` object. 
+        If the endpoint failed to return data a `NoCardFound` exception will be
         raised
     """     
     if not quality:
@@ -358,9 +358,10 @@ async def fetch_cardbacks(session :aiohttp.ClientSession, **kwargs) \
             - what locale to use in the response. Default locale is enUS. 
                 - Available locales: enUS, enGB, deDE, esES, esMX, frFR, itIT, 
                 koKR, plPL, ptBR, ruRU, zhCN, zhTW, jaJP, thTH
+
     Returns:
-        a MultipleCards or Cardback object. If the endpoint failed to return 
-        data a NoCardbackFound exception will be raised
+        a `MultipleCards` or `Cardback object`. If the endpoint failed to 
+        return data a `NoCardbackFound` exception will be raised
     """       
 
     endpoint = "/cardsbacks"  
@@ -379,7 +380,7 @@ async def fetch_card_by_partial_name(session :aiohttp.ClientSession,
                                                 NonCollectibleCard
                                             ]
                                         ]:
-    """Make an asynchronous request to /cards/search/{partial_name} endpoint.
+    """Make an asynchronous request to /cards/search/`{partial_name}` endpoint.
 
     Positional Arguments:
         - session : aiohttp.ClientSession
@@ -399,11 +400,11 @@ async def fetch_card_by_partial_name(session :aiohttp.ClientSession,
                 - Available locales: enUS, enGB, deDE, esES, esMX, frFR, itIT, 
                 koKR, plPL, ptBR, ruRU, zhCN, zhTW, jaJP, thTH
 
-    Raises InvalidArgument when ``if not partial_name`` evaluates to True.
+    Raises `InvalidArgument` when ``if not partial_name`` evaluates to `True`.
 
     Returns:
-        a MultipleCards, CollectibleCard, or a NonCollectibleCard object. If
-        the endpoint failed to return data a NoCardFound exception will be
+        a `MultipleCards`, `CollectibleCard`, or a `NonCollectibleCard` object. 
+        If the endpoint failed to return data a `NoCardFound` exception will be
         raised
     """       
     if not partial_name:
@@ -425,7 +426,7 @@ async def fetch_cards_by_faction(session :aiohttp.ClientSession, faction :str,
                                                     NonCollectibleCard
                                                 ]
                                               ]:
-    """Make an asynchronous request to /cards/factions/{faction} endpoint.
+    """Make an asynchronous request to /cards/factions/`{faction}` endpoint.
 
     Positional Arguments:
         - session : aiohttp.ClientSession
@@ -453,11 +454,11 @@ async def fetch_cards_by_faction(session :aiohttp.ClientSession, faction :str,
                 - Available locales: enUS, enGB, deDE, esES, esMX, frFR, itIT, 
                 koKR, plPL, ptBR, ruRU, zhCN, zhTW, jaJP, thTH
     
-    Raises InvalidArgument when ``if not faction`` evaluates to True.
+    Raises `InvalidArgument` when ``if not faction`` evaluates to `True`.
 
     Returns:
-        a MultipleCards, CollectibleCard, or a NonCollectibleCard object. If
-        the endpoint failed to return data a NoCardFound exception will be
+        a `MultipleCards`, `CollectibleCard`, or a `NonCollectibleCard` object. 
+        If the endpoint failed to return data a `NoCardFound` exception will be
         raised
     """       
     if not faction:
@@ -479,7 +480,7 @@ async def fetch_cards_by_type(session :aiohttp.ClientSession, card_type :str,
                                                 NonCollectibleCard
                                             ]
                                            ]:
-    """Make an asynchronous request to /cards/types/{card_type} endpoint.
+    """Make an asynchronous request to /cards/types/`{card_type}` endpoint.
 
     Positional Arguments:
         - session : aiohttp.ClientSession
@@ -507,11 +508,11 @@ async def fetch_cards_by_type(session :aiohttp.ClientSession, card_type :str,
                 - Available locales: enUS, enGB, deDE, esES, esMX, frFR, itIT, 
                 koKR, plPL, ptBR, ruRU, zhCN, zhTW, jaJP, thTH
 
-    Raises InvalidArgument when ``if not card_type`` evaluates to True.
+    Raises `InvalidArgument` when ``if not card_type`` evaluates to `True`.
 
     Returns:
-        a MultipleCards, CollectibleCard, or a NonCollectibleCard object. If
-        the endpoint failed to return data a NoCardFound exception will be
+        a `MultipleCards`, `CollectibleCard`, or a `NonCollectibleCard` object. 
+        If the endpoint failed to return data a `NoCardFound` exception will be
         raised
     """       
     if not card_type:
@@ -559,11 +560,11 @@ async def fetch_all_cards(session :aiohttp.ClientSession, **kwargs) \
                 - Available locales: enUS, enGB, deDE, esES, esMX, frFR, itIT, 
                 koKR, plPL, ptBR, ruRU, zhCN, zhTW, jaJP, thTH
 
-    Raises InvalidArgument when ``if not hs_set`` evaluates to True.
+    Raises `InvalidArgument` when ``if not hs_set`` evaluates to `True`.
 
     Returns:
-        a MultipleCards object. If the endpoint failed to return data a 
-        NoCardFound exception will be raised
+        a `MultipleCards` object. If the endpoint failed to return data a 
+        `NoCardFound` exception will be raised
     """       
 
     endpoint = "/cards"  

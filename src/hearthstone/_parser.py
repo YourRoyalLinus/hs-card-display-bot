@@ -4,14 +4,15 @@ from ._card import MultipleCards, NonCollectibleCard, CollectibleCard, Cardback
 def parse_api_result(api_result :dict) \
         -> Union[MultipleCards, Union[CollectibleCard, NonCollectibleCard]]:
     """Parse the result returned by the API call and instantiate the proper
-    concrete implementation of _Card by inspecting api_result
+    concrete implementation of :class:`_Card` by inspecting api_result
 
     Positional Arguments:
         - api_result : dict
             - the result of the call to the api endpoint.
     
     Returns:
-        a concrete _Card implemented class inferred from the api_result object
+        a concrete :class:`_Card` implemented class inferred from 
+        `api_result`
     """
     if len(api_result) > 1:
         return MultipleCards(api_result)

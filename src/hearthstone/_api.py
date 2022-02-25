@@ -2,7 +2,7 @@
 """Module that loads environment variables for the Hearthstone API
 
 GLOBALS:
-    ENV : Dict
+    ENV : dict
         API_URI - Base URL for the Hearthstone API
         API_KEY - Key included in headers of requests to Hearthstone API
         API_HOST - Host URL included in headers of requests to Hearthstone API

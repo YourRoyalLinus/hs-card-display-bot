@@ -31,7 +31,7 @@ class HTTPException(APIException):
 class APIServerError(HTTPException):
     """Exception that's raised when a 500 range status code occurs
 
-    Subclassed from HTTPExcpetion
+    Subclassed from :class:`HTTPExcpetion`
     """
     pass
 
@@ -40,6 +40,6 @@ class NoCardFound(HTTPException):
     query to an endpoint that is expecting to return a CollectibleCard or
     NonCollectible Card object
 
-    Subclassed from HTTPExcpetion
+    Subclassed from :class:`HTTPExcpetion`
     """
     pass
