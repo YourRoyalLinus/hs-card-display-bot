@@ -1,31 +1,38 @@
-import logging
-import datetime
+from logging import Logger, Formatter, getLogger, handlers, INFO
+from pathlib import Path
 
-_LOGGING_DIR = r'./logs/'
-_LOGGING_DATE = datetime.datetime.today().strftime('%Y%m%d')
-_LOG_FILE = _LOGGING_DIR + 'LOG_' + _LOGGING_DATE + '.log'
 _BOT_LOGGER_NAME = 'hs-card-discord-bot'
 
-def _init() -> None:
-    _LOGGER = logging.getLogger(_BOT_LOGGER_NAME)
-    _LOGGER.setLevel(logging.INFO)
-    formatter = logging.Formatter(
-                        fmt='%(asctime)s - %(levelname)s - %(message)s', 
-                        datefmt='%m/%d/%Y %H:%M:%S'
-                        )
-    fh = logging.FileHandler(_LOG_FILE, mode='a', encoding='utf-8')
-    fh.setLevel(logging.INFO)
-    fh.setFormatter(formatter)
+def setup() -> None:
+    """Set up the :class:`bot` Logger"""
+    logger = getLogger(_BOT_LOGGER_NAME)
+    logger.setLevel(INFO)
+    
+    log_file = Path("logs", "bot.log")
+    log_file.parent.mkdir(exist_ok=True)
+  
+    formatter = Formatter('%(asctime)s - %(levelname)s - %(message)s', 
+                            datefmt='%m/%d/%Y %H:%M:%S')
+    file_handler = handlers.RotatingFileHandler(log_file, maxBytes=2097152,
+                        backupCount=5, encoding="utf-8")
+    file_handler.setFormatter(formatter)
+    file_handler.setLevel(INFO)
 
-    _LOGGER.addHandler(fh)
+    logger.addHandler(file_handler)
 
     return None
 
-def get_logger() -> logging.Logger:
-    _logger =  logging.getLogger(_BOT_LOGGER_NAME)
+def get_logger() -> Logger:
+    """Return the logger for the bot. If this is the first call to get_logger,
+    call log.setup to configure the logger
+    
+    Returns:
+        logger.Logger(log._BOT_LOGGER_NAME)
+    """
+    logger_ =  getLogger(_BOT_LOGGER_NAME)
 
-    if not _logger.hasHandlers():
-        _init()
+    if not logger_.hasHandlers():
+        setup()
 
-    return _logger
+    return logger_
 
