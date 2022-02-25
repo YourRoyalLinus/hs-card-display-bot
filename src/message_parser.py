@@ -4,7 +4,7 @@ from discord import Message
 from src._fetch_request import CardFetchRequest, MetadataFetchRequest
 
 class ParserException(Exception):
-    """Base exception raised when an error occurs while Parsing"""
+    """Base exception raised when an error occurs while parsing"""
     def __init__(self, base: Exception):
         super().__init__()
         self.exception = base
@@ -16,15 +16,16 @@ class NoValidRequests(ParserException):
     pass
 
 def is_valid_request_str(msg_content: str) -> bool:
-    """Determine whether the Discord.Message content has a proper closing 
-    bracket for every valid open bracket. Valid brackets are either [] or {}
+    """Determine whether the :class:`Discord.Message` content has a proper 
+    closing bracket for every valid open bracket. Valid brackets are either 
+    `[]` or `{}`
 
     Positional Arguemnts:
         - msg_content : str
             - the text representation of the Discord.Message message
     
     Returns:
-        True if there is a proper corresponding closing bracket for every
+        `True` if there is a proper corresponding closing bracket for every
         valid opening bracket
     """
     _valid_brackets = {']':'[', '}':'{'}
@@ -50,13 +51,14 @@ def _parse_message_str(msg_content :str) -> List[
                                                     MetadataFetchRequest
                                                 ]
                                             ]:
-    """Generate a FetchObject for each valid NON-NESTED fetch request found 
-    in the Discord.Message. Valid fetch requests are wrapped in [] for 
-    CardFetchRequests and {} for MetadataFetchRequests.
-        - E.g: [card_name] or {card_name} or [card_dbfid] or "Man [card_name]
+    """Generate a :class:`FetchObject` for each valid NON-NESTED fetch request 
+    found in the :class:`Discord.Message`. Valid fetch requests are wrapped in
+    `[]` for :class:`CardFetchRequests` and `{}` for 
+    :class:`MetadataFetchRequests`.
+        - E.g: "[card_name] or {card_name} or [card_dbfid]" or "Man [card_name]
         and {other_card_name} are too strong right now!"
     
-    Attempts to nest fetch requests - [ [card_name] too good!] will result in
+    Attempts to nest fetch requests - "[ [card_name] too good!]" will result in
     the first child request that matches the outer request to be invalid
 
     Positional Arguemnts:
@@ -64,7 +66,7 @@ def _parse_message_str(msg_content :str) -> List[
             - the text representation of the Discord.Message message
     
     Returns:
-        a list of FetchRequest Objects
+        a list of :class:`FetchRequest` objects
 
     """
     fetch_requests = []
@@ -87,17 +89,19 @@ def parse_message(msg :Message) -> List[Union[
                                             MetadataFetchRequest
                                         ]
                                     ]:
-    """Generate a list of FetchRequest objects from Discord.Message
+    """Generate a list of :class:`FetchRequest` objects from 
+    :class:`Discord.Message`
     
     Positional Arguments:
         msg : Discord.Message
             - Message object that represents a message sent in a discord 
             server
+            
     Returns
-        list of FetchRequests objects
+        list of :class:`FetchRequests` objects
     
-    If there are no FetchRequest objects, NoValidRequests exception is raised.
-    Any other exception raises a ParserException
+    If there are no :class:`FetchRequest` objects, a `NoValidRequests` 
+    exception is raised. Any other exception raises a `ParserException`
     """
     try:
         fetch_requests =  _parse_message_str(msg.content)

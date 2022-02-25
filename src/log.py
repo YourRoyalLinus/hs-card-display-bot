@@ -4,7 +4,7 @@ from pathlib import Path
 _BOT_LOGGER_NAME = 'hs-card-discord-bot'
 
 def setup() -> None:
-    """Set up the :class:`bot` Logger"""
+    """Set up the bot `Logger`"""
     logger = getLogger(_BOT_LOGGER_NAME)
     logger.setLevel(INFO)
     
@@ -23,11 +23,11 @@ def setup() -> None:
     return None
 
 def get_logger() -> Logger:
-    """Return the logger for the bot. If this is the first call to get_logger,
-    call log.setup to configure the logger
+    """Return the logger for the bot. If this is the first call to 
+    `get_logger`, call `log.setup()` to configure the logger
     
     Returns:
-        logger.Logger(log._BOT_LOGGER_NAME)
+        logger for the bot
     """
     logger_ =  getLogger(_BOT_LOGGER_NAME)
 

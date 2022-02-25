@@ -4,29 +4,30 @@ from src.hearthstone._card import CollectibleCard, NonCollectibleCard
 
 
 class FormattingException(Exception): 
-    """Base exception raised when an error occurs while Formatting"""
+    """Base exception raised when an error occurs while formatting"""
     pass
 
 class MissingData(FormattingException):
     """Exception that is raised when an expected attribute of a concrete
-    implemented _Card object is missing
+    implemented :class:`_Card` object is missing
     """
     pass
 
 def _create_embed(card :Union[CollectibleCard, NonCollectibleCard]) -> Embed:
-    """Created a Discord.Embed. For each attr in card create a field
-    with name=attr.title() and value=getattr(card, attr). If the value is
-    of type list, set value to a ',' separated string of items from value list
+    """Create a :class:`Discord.Embed`. For each attr in `card` create a field
+    with `name=attr.title()` and `value=getattr(card, attr)`. If the `value` is
+    of type `list`, set `value` to a `','` separated string of items from 
+    `value` list
     
     Positional Arguments:
         - card : CollectibleCard or NonCollectibleCard
             - a Card object that represents the data of a card fetched from 
             the hearthstone api
 
-    Returns:
-        a populated Discord.Embed object
+    Raise a `FormattingException` if an attribute is not found
 
-    Raised a FormattingException if an attribute is not found
+    Returns:
+        a populated :class:`Discord.Embed` object
     """
     try:
         embed = Embed(type="rich")
@@ -51,10 +52,10 @@ def format_card(card : Union[CollectibleCard, NonCollectibleCard]) -> str:
             - a Card object that represents the data of a card fetched from 
             the hearthstone api
 
-    Returns:
-        card.img
+    Raises a `FormattingException` when `card.img` does not exist 
 
-    Raises a FormattingException when card.img does not exist 
+    Returns:
+        `card.img`    
     """
     try:
         return card.img
@@ -63,18 +64,18 @@ def format_card(card : Union[CollectibleCard, NonCollectibleCard]) -> str:
 
 def format_card_metadata_embeded(
         card :Union[CollectibleCard, NonCollectibleCard]) -> Embed:
-    """Create and return a Discord.Embed if card has all of its attributes
-    populated
+    """Create and return a :class:`Discord.Embed` if `card` has all of its 
+    attributes populated
 
     Positional Arguments:
         - card : CollectibleCard or NonCollectibleCard
             - a Card object that represents the data of a card fetched from 
             the hearthstone api
 
-    Returns:
-        the Discord.Embed object from _create_embed
+    Raises a `MissingData` exception when `if card` evaluates to `False`
 
-    Raises a MissingData exception when `if card` evaluates to False
+    Returns:
+        :class:`Discord.Embed` object
     """
     if card:
         return _create_embed(card)

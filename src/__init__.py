@@ -1,4 +1,4 @@
-"""A Discord bot to display Hearthstone card images"""
+"""A Discord bot to display Hearthstone card images and metadata"""
 
 from .bot import Bot
 
